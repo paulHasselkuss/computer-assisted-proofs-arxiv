@@ -1,0 +1,21 @@
+keywords
+# List from Wikipedia (https://en.m.wikipedia.org/wiki/Proof_assistant), entries without any matches in a title have been removed
+ACL2
+Agda
+#Albatross
+Coq
+#F*
+#HOL Light
+(?-i:HOL)
+Idris
+Isabelle
+(?-i:Lean)
+#LEGO
+Metamath
+Mizar
+#Nqthm
+#NuPRL
+#PVS
+#Twelf
+computer-assisted
+computer assisted
