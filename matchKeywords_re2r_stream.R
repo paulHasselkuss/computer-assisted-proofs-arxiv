@@ -2,7 +2,8 @@ library(tidyverse)
 library(jsonlite)
 library(re2r)
 
-rawFile <- "arxiv-metadata.origin" #use 'dummy' for testing
+rawFile <- "arxiv-metadata.origin"
+#rawFile <- "dummy" #for testing
 
 # Keywords
 keywords <- read.delim("keywords.txt", comment.char = '#')
@@ -59,8 +60,8 @@ stream_in(inRaw, pagesize = 1000, handler = function(data){
   
   #preprints by year and category. One preprint can have several categories
   data %>%
-    distinct(id.arxiv, .keep_all = T) %>%
     unnest_longer(categories.primary) %>%
+    distinct(id.arxiv, categories.primary, .keep_all = T) %>% #remove doubles
     group_by(year, categories.primary) %>%
     summarise(total=n(), matches=sum(has.match)) %>%
     stream_out(outCategories)
