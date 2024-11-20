@@ -18,11 +18,11 @@ statsTotal %>% write_csv("out/stats_total.csv")
 
 totalPoly <- lm(matches ~ poly(year, 2), data=statsTotal)
 summary(totalPoly)
-report(totalPoly)
 
 totalLogistic <- glm(cbind(matches, total-matches) ~ year, data = statsTotal, family = binomial)
 summary(totalLogistic)
-report(totalLogistic)
+Anova(totalLogistic, type = "II") # X2
+exp(coef(totalLogistic)["year"]) # odds
 
 ### THE CATEGORIES (MATH AND CS)
 
@@ -66,21 +66,21 @@ statsMath <- statsCategories %>% filter(categories.primary == "math")
 
 mathPoly <- lm(matches ~ poly(year, 2), data=statsMath)
 summary(mathPoly)
-report(mathPoly)
 
 mathLogistic <- glm(cbind(matches, total-matches) ~ year, data = statsMath, family = binomial)
 summary(mathLogistic)
-report(mathLogistic)
+Anova(mathLogistic, type = "II") # X2
+exp(coef(mathLogistic)["year"]) # odds
 
 statsCs <- statsCategories %>% filter(categories.primary == "cs")
 
 csPoly <- lm(matches ~ poly(year, 2), data=statsCs)
 summary(csPoly)
-report(csPoly)
 
 csLogistic <- glm(cbind(matches, total-matches) ~ year, data = statsCs, family = binomial)
 summary(csLogistic)
-report(csLogistic)
+Anova(csLogistic, type = "II") # X2
+exp(coef(csLogistic)["year"]) # odds
 
 ## KEYWORDS
 
