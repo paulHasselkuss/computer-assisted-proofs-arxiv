@@ -53,7 +53,9 @@ myTheme <- theme(
   panel.grid.major.y = element_line(linetype = "dashed"),
   panel.background = element_rect(fill = "#ffffff", color = "#ffffff"),
   plot.background = element_rect(fill = "#ffffff", color = "#ffffff"),
-  legend.background = element_rect(fill = "#ffffff", color = "#ffffff")
+  legend.background = element_rect(fill = "#ffffff", color = "#ffffff"),
+  legend.position="bottom",
+  legend.box.spacing.x = unit(0, "pt")
 )
 
 myThemeHist <- myTheme + theme(
