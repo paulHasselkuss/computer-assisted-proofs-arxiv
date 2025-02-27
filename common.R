@@ -1,9 +1,11 @@
 # Load required libraries
 library(tidyverse)
 library(jsonlite)
+library(hrbrthemes)
 library(car)
 
-filterYear <- 2024
+filterYear <- 2025
+categoriesToKeep <- c("math", "cs", "eess")
 
 # the matching preprints + metadata
 matches <- stream_in(file("processed/matches.json")) %>%
@@ -33,34 +35,26 @@ statsCategories <- stream_in(file("processed/stats_categories.json")) %>%
   ) #%>%
   #pivot_wider(names_from = categories.primary, values_from = c(total, matches), values_fill = 0)
 
+# same data, but with minor categories collapsed into one
+statsCollapsed <- statsCategories %>%
+  mutate(categories.primary = ifelse(
+    categories.primary %in% categoriesToKeep,
+    categories.primary,
+    "other"
+  )) %>%
+    group_by(year, categories.primary) %>%
+    summarize(
+      total = sum(total),
+      matches = sum(matches),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      categories.primary=as_factor(categories.primary),
+      categories.primary=fct_relevel(categories.primary, c("math", "cs", "eess", "other"))
+    )
+
 saveImage <- function(title = "plot", p = last_plot(), x = 1, y = 1) {
-  ggsave(paste0(title, ".png"), plot = p, path = "./out/", width = 1400 * x, height = 1050 * y, dpi = 200, units = "px")
+  ggsave(paste0(title, ".png"), plot = p, path = "./out/", width = 1500 * x, height = 1100 * y, dpi = 200, units = "px")
   print(paste0("Image written: ", title, ".png"))
 }
 
-myTheme <- theme(
-  text = element_text(family = "EB Garamond", size = 12),
-  plot.title = element_text(size = 26, face = "bold", hjust = 0.5),
-  plot.subtitle = element_text(hjust = 0.5),
-  axis.text = element_text(color = "black"),
-  axis.text.x = element_text(size = 12, face = "bold"),
-  plot.title.position = "plot",
-  axis.ticks = element_blank(),
-  axis.line = element_blank(),
-  panel.grid = element_line(color = "#b4aea9"),
-  panel.grid.minor = element_blank(),
-  panel.grid.major.x = element_blank(),
-  panel.grid.major.y = element_line(linetype = "dashed"),
-  panel.background = element_rect(fill = "#ffffff", color = "#ffffff"),
-  plot.background = element_rect(fill = "#ffffff", color = "#ffffff"),
-  legend.background = element_rect(fill = "#ffffff", color = "#ffffff"),
-  legend.position="bottom",
-  legend.box.spacing.x = unit(0, "pt")
-)
-
-myThemeHist <- myTheme + theme(
-  text = element_text(size = 10),
-  plot.title = element_text(size = 18),
-  axis.text.x = element_text(size = 10, face = "plain"),
-  axis.line = element_line(color = "black")
-)

@@ -4,14 +4,14 @@ source("common.R")
 
 statsTotal %>%
   ggplot(aes(x=year, y=matches)) +
-  geom_bar(stat = "identity",fill="#69b3a2", alpha=.9) +
-  scale_x_continuous(limits = c(1986, 2024), breaks=seq(1986, 2024, by=4)) +
-  scale_y_continuous(limits = c(0, 305), breaks=seq(0, 300, by=25)) +
+  geom_line(color="black",size=1) +
+  scale_x_continuous(limits = c(1985, 2025), breaks=seq(1985, 2025, by=5)) +
+  scale_y_continuous(limits = c(0, 350), breaks=seq(0, 350, by=50)) +
   labs(title="Matches by year",
-       subtitle = "Matching preprints across all categories on the ArXiv from 1986 to 2023", 
-       x= "Year",
-       y= "No. of matches") +
-  myThemeHist
+    subtitle = "Number of matching preprints on the ArXiv from 1986 to 2024", 
+    x= "Year of submission",
+    y= "No. of matches") +
+  theme_ipsum_rc(grid="Y")
 saveImage(title="stats_total")
 
 statsTotal %>% write_csv("out/stats_total.csv")
@@ -26,36 +26,18 @@ exp(coef(totalLogistic)["year"]) # odds
 
 ### THE CATEGORIES (MATH AND CS)
 
-categoriesToKeep <- c("math", "cs", "eess", "physics")
-statsCollapsed <- statsCategories %>%
-  mutate(categories.primary = ifelse(
-    !str_detect(categories.primary, paste(categoriesToKeep, collapse = "|")),
-    "other",
-    categories.primary
-  )) %>%
-  group_by(year, categories.primary) %>%
-  summarize(
-    total = sum(total),
-    matches = sum(matches),
-    .groups = "drop"
-  )
+temp <- statsCollapsed %>% mutate(categories.primary.dup=categories.primary)
 
 statsCollapsed %>%
-  mutate(
-    categories.primary=as_factor(categories.primary),
-    categories.primary=fct_relevel(categories.primary, c("math", "cs", "eess", "physics", "other"))
-  ) %>%
-  ggplot( aes(x=year, y=matches, fill=categories.primary)) +
-  geom_bar(stat = "identity", alpha=.9) +
-  scale_x_continuous(limits = c(1986, 2024), breaks=seq(1986,2024, by=4)) +
-  scale_y_continuous(breaks=seq(0,600, by=50)) +
-  labs(title="Matches by category and year",
-       subtitle = "Matching preprints on the ArXiv from 1986 to 2023", 
-       x= "Year",
-       y= "No. of matches",
-       fill="") +
-  myThemeHist
-
+  ggplot(aes(x=year, y=matches)) +
+  geom_line( data=temp %>% dplyr::select(-categories.primary), aes(group=categories.primary.dup), color="grey", size=0.5, alpha=0.5) +
+  geom_line( aes(color=categories.primary), color="black", linewidth=1 )+
+  facet_wrap(~categories.primary, ncol=2) +
+    labs(title="Matches by category and year",
+       subtitle = "Number of matching preprints on the ArXiv from 1986 to 2024", 
+       x= "Year of submission",
+       y= "No. of matches") +
+  theme_ipsum_rc(grid="Y")
 saveImage(title="stats_categories")
 
 statsCollapsed %>%

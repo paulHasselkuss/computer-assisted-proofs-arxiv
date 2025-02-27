@@ -2,13 +2,13 @@ source("common.R")
 
 statsTotal %>%
   ggplot(aes(x=year, y=total)) +
-  geom_bar(stat = "identity",fill="#69b3a2", alpha=.9) +
-  scale_x_continuous(limits = c(1986, 2024), breaks=seq(1986, 2024, by=4)) +
+  geom_line(color="#69b3a2",size=1) +
+  scale_x_continuous(limits = c(1985, 2025), breaks=seq(1985, 2025, by=5)) +
   labs(title="Submissions by year",
-       subtitle = "Submitted preprints across all categories on the ArXiv from 1986 to 2023", 
+       subtitle = "Submitted preprints across all categories on the ArXiv from 1986 to 2024", 
        x= "Year",
        y= "No. of submissions") +
-  myThemeHist
+  theme_ipsum_rc(grid="Y")
 saveImage(title="sublement_stats_submissions")
 
 statsTotal %>%
@@ -21,13 +21,12 @@ statsTotal %>%
     se = T, # confidence intervals
     size = .5
   ) +
-  scale_x_continuous(limits = c(1986, 2024), breaks=seq(1986, 2024, by=4)) +
-  scale_y_continuous(limits = c(0, 305), breaks=seq(0, 300, by=25)) +
+  scale_x_continuous(limits = c(1986, 2025), breaks=seq(1986, 2024, by=4)) +
   labs(title="Matches by year",
-       subtitle = "Matching preprints across all categories on the ArXiv from 1986 to 2023", 
+       subtitle = "Matching preprints across all categories on the ArXiv from 1986 to 2024", 
        x= "Year",
        y= "No. of matches") +
-  myThemeHist
+  theme_ipsum_rc(grid="Y")
 saveImage(title="sublement_stats_total")
 
 
@@ -47,7 +46,7 @@ statsTotal %>%
        subtitle = "Percentage of matching preprints across all categories on the ArXiv from 1986 to 2023", 
        x= "Year",
        y= "Matches from Total (%)") +
-  myThemeHist
+  theme_ipsum_rc(grid="Y")
 saveImage(title="sublement_stats_total_percentage")
 
 statsCategories %>%
@@ -62,13 +61,12 @@ statsCategories %>%
     size = .5
   ) +
   scale_x_continuous(limits = c(1986, 2024), breaks=seq(1986, 2024, by=4)) +
-  scale_y_continuous(limits = c(0, 300), breaks=seq(0, 300, by=25)) +
   labs(title="Matches by year",
-       subtitle = "Matching preprints in cs and math on the ArXiv from 1986 to 2023", 
+       subtitle = "Matching preprints in cs and math on the ArXiv from 1986 to 2024", 
        x= "Year",
        y= "No. of matches",
        shape="category") +
-  myThemeHist
+  theme_ipsum_rc(grid="Y")
 saveImage(title="sublement_stats_categories")
 
 statsCategories %>%
@@ -85,24 +83,9 @@ statsCategories %>%
   ) +
   scale_x_continuous(limits = c(1986, 2024), breaks=seq(1986, 2024, by=4)) +
   labs(title="% of matches by year",
-       subtitle = "Percentage of matching preprints in cs and math on the ArXiv from 1986 to 2023", 
+       subtitle = "Percentage of matching preprints in cs and math on the ArXiv from 1986 to 2024", 
        x= "Year",
        y= "Matches from Total (%)",
        shape="category") +
-  myThemeHist
+        theme_ipsum_rc(grid="Y")
 saveImage(title="sublement_stats_categories_percentage")
-
-
-categoriesToKeep <- c("math", "cs", "eess", "physics")
-statsCollapsed <- statsCategories %>%
-  mutate(categories.primary = ifelse(
-    !str_detect(categories.primary, paste(categoriesToKeep, collapse = "|")),
-    "other",
-    categories.primary
-  )) %>%
-  group_by(year, categories.primary) %>%
-  summarize(
-    total = sum(total),
-    matches = sum(matches),
-    .groups = "drop"
-  )
